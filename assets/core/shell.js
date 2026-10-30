@@ -548,6 +548,45 @@
     return out;
   }
 
+  /* 流程图形化总览：从 steps 自动生成，强化"案例流程每一步"的可视化 */
+  var ROLE_COLORS = { '数据': '#41699b', '标注': '#767a2e', '算法': '#2f7d6b', '后处理': '#b26a39', '闭环': '#7e5a8d' };
+  function roleColor(r) { return ROLE_COLORS[r] || '#79828a'; }
+  function clip(str, n) { str = String(str || ''); return str.length > n ? str.slice(0, n) + '…' : str; }
+  function flowFig(steps) {
+    if (!steps || !steps.length) return '';
+    var n = steps.length;
+    var w = n <= 5 ? 108 : Math.max(88, Math.floor((620 - 12 - (n - 1) * 12) / n));
+    var gap = n <= 5 ? 14 : 12;
+    var y = 26, h = 62;
+    var s = '<svg viewBox="0 0 620 ' + (n <= 5 ? 150 : 150) + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="案例流程总览图">';
+    steps.forEach(function (st, i) {
+      var x = 6 + i * (w + gap);
+      var col = roleColor(st.role);
+      s += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" fill="' + col + '" fill-opacity=".1" stroke="' + col + '" stroke-opacity=".4"/>';
+      s += '<rect x="' + x + '" y="' + y + '" width="3" height="' + h + '" rx="1.5" fill="' + col + '"/>';
+      s += '<text x="' + (x + 12) + '" y="' + (y + 24) + '" font-size="11.5" font-weight="600" fill="#242b2e">' + esc(clip(st.name, 8)) + '</text>';
+      s += '<text x="' + (x + 12) + '" y="' + (y + 44) + '" font-size="9" font-family="monospace" fill="' + col + '">' + esc(clip(st.role || 'STEP', 8)) + '</text>';
+      s += '<text x="' + (x + w - 10) + '" y="' + (y + h - 8) + '" font-size="8" font-family="monospace" fill="' + col + '" text-anchor="end">' + esc(pad(i + 1)) + '</text>';
+      if (i < n - 1) {
+        s += '<path d="M' + (x + w + 2.5) + ' ' + (y + 34) + 'h' + (gap - 6) + 'm-3.5-3.4 3.6 3.4-3.6 3.4" stroke="#c9c2b0" stroke-width="1.2" fill="none"/>';
+      }
+      if (st.effect) {
+        s += '<text x="' + (x + w / 2) + '" y="' + (y + h + 18) + '" font-size="8.5" fill="#5d666d" text-anchor="middle">' + esc(clip(st.effect.replace(/<[^>]+>/g, ''), 11)) + '</text>';
+      }
+    });
+    /* 图例：role → 颜色 */
+    var roles = [];
+    steps.forEach(function (st) { var r = st.role || 'STEP'; if (roles.indexOf(r) < 0 && ROLE_COLORS[r]) roles.push(r); });
+    var lx = 6;
+    roles.forEach(function (r) {
+      s += '<rect x="' + lx + '" y="' + (y + h + 34) + '" width="10" height="8" rx="2" fill="' + roleColor(r) + '" fill-opacity=".35"/>';
+      s += '<text x="' + (lx + 14) + '" y="' + (y + h + 41) + '" font-size="9" fill="#79828a">' + esc(r) + '</text>';
+      lx += 14 + r.length * 10 + 14;
+    });
+    s += '</svg>';
+    return '<div class="figure" style="margin:16px 0 4px">' + s + '</div>';
+  }
+
   function renderWorkflow(sc, c) {
     var w = c.tabs.workflow;
     var out = '<div class="case-lead"><div>' +
@@ -556,7 +595,7 @@
       (w.lead || []).map(function (p) { return '<p>' + rich(p) + '</p>'; }).join('') +
       '</div>' + (w.stats ? K.cells(w.stats) : '') + '</div>';
 
-    out += K.pipeline(w.steps || []);
+    out += flowFig(w.steps) + K.pipeline(w.steps || []);
 
     if (w.metrics) {
       out += K.sec4(0, 'METRICS', w.metrics.title || '怎么算"做对了"', w.metrics.html || '');
