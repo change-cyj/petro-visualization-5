@@ -1,0 +1,145 @@
+{
+  "id": "d2-precursor-warn",
+  "sceneId": "d2",
+  "title": "井下复杂事故前兆预警：多变量时序异常检测",
+  "status": "ready",
+  "version": "1.0.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "多变量异常检测",
+          "desc": "实时时序 · 无监督",
+          "html": "<span style=\"color:var(--c-ts)\">TS</span>"
+        },
+        {
+          "label": "数据门槛",
+          "value": "单井即可",
+          "desc": "10+ 通道 · 1-10 s"
+        },
+        {
+          "label": "收益",
+          "value": "提前 10-30 min",
+          "desc": "留反应窗口"
+        },
+        {
+          "label": "难度",
+          "value": "高",
+          "desc": "异常样本少 + 误报代价高",
+          "html": "<span class=\"dtag\" data-d=\"高\">难度 高</span>"
+        }
+      ],
+      "lede": "卡钻、井漏、气侵等井下复杂情况一旦发生，损失以小时到天计。但多数事故前会有\"暗流涌动\"——扭矩小幅波动、立管压力微升、返出流量缓慢下降这些前兆混在正常工况噪声里，司钻难以及时识别。传统报警用固定阈值，误报和漏报都高。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>司钻同时监控十几条参数曲线。事故前兆的特点是<b>微弱且跨通道相关</b>：</p><div class=\"figure\"><svg viewBox=\"0 0 620 204\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"56\" y=\"16\" width=\"544\" height=\"148\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><rect x=\"56\" y=\"16\" width=\"244.8\" height=\"148\" fill=\"#e6f1ec\" fill-opacity=\"0.4\"/><rect x=\"300.8\" y=\"16\" width=\"135.99999999999994\" height=\"148\" fill=\"#f8ecdf\" fill-opacity=\"0.5\"/><rect x=\"436.79999999999995\" y=\"16\" width=\"163.20000000000005\" height=\"148\" fill=\"#b05a51\" fill-opacity=\"0.15\"/><text x=\"178.4\" y=\"10\" text-anchor=\"middle\" font-size=\"9\" fill=\"#2f7d6b\">正常钻进</text><text x=\"368.79999999999995\" y=\"10\" text-anchor=\"middle\" font-size=\"9\" fill=\"#b26a39\">前兆期（22 min）</text><text x=\"518.4\" y=\"10\" text-anchor=\"middle\" font-size=\"9\" fill=\"#b05a51\">卡钻发生</text><path d=\"M56 33 L70 34.6 L83 36.1 L97 37.2 L110 37.9 L124 38.0 L138 37.5 L151 36.6 L165 35.3 L178 33.7 L192 32.0 L206 30.5 L219 29.2 L233 28.4 L246 28.0 L260 28.2 L274 28.9 L287 30.1 L301 31.6 L314 32.8 L328 31.6 L342 31.0 L355 31.3 L369 32.7 L382 34.7 L396 37.0 L410 39.0 L423 39.9 L437 39.4 L450 23.8 L464 18.4 L478 24.2 L491 34.9 L505 40.0 L518 34.6 L532 23.9 L546 18.4 L559 24.1 L573 37.1 L586 46.7 L600 45.4\" fill=\"none\" stroke=\"#41699b\" stroke-width=\"1.6\"/><text x=\"50\" y=\"36\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\">扭矩</text><path d=\"M56 71 L70 75.9 L83 76.0 L97 75.5 L110 74.6 L124 73.3 L138 71.7 L151 70.0 L165 68.5 L178 67.2 L192 66.4 L206 66.0 L219 66.2 L233 66.9 L246 68.1 L260 69.6 L274 71.3 L287 72.9 L301 74.3 L314 70.1 L328 69.9 L342 70.7 L355 72.2 L369 74.0 L382 75.6 L396 76.3 L410 75.7 L423 73.9 L437 71.0 L450 54.4 L464 61.2 L478 72.9 L491 79.1 L505 74.7 L518 64.7 L532 59.6 L546 65.4 L559 78.0 L573 87.0 L586 84.9 L600 74.0\" fill=\"none\" stroke=\"#2f7d6b\" stroke-width=\"1.6\"/><text x=\"50\" y=\"74\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\">立压</text><path d=\"M56 109 L70 112.6 L83 111.3 L97 109.7 L110 108.0 L124 106.5 L138 105.2 L151 104.4 L165 104.0 L178 104.2 L192 104.9 L206 106.1 L219 107.6 L233 109.3 L246 110.9 L260 112.3 L274 113.3 L287 113.9 L301 113.9 L314 108.2 L328 109.2 L342 110.7 L355 112.0 L369 112.6 L382 112.2 L396 110.7 L410 108.2 L423 105.2 L437 102.6 L450 100.2 L464 112.9 L478 119.8 L491 115.8 L505 106.0 L518 100.6 L532 105.7 L546 117.5 L559 125.5 L573 122.3 L586 110.3 L600 99.8\" fill=\"none\" stroke=\"#b26a39\" stroke-width=\"1.6\"/><text x=\"50\" y=\"112\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\">钻压</text><path d=\"M56 147 L70 146.0 L83 144.5 L97 143.2 L110 142.4 L124 142.0 L138 142.2 L151 142.9 L165 144.1 L178 145.6 L192 147.3 L206 148.9 L219 150.3 L233 151.3 L246 151.9 L260 151.9 L274 151.4 L287 150.4 L301 149.1 L314 143.1 L328 144.3 L342 145.1 L355 145.0 L369 143.9 L382 141.9 L396 139.5 L410 137.4 L423 136.0 L437 136.1 L450 146.1 L464 153.1 L478 148.8 L491 138.3 L505 132.1 L518 136.2 L532 146.9 L546 153.8 L559 149.8 L573 137.3 L586 126.6 L600 126.1\" fill=\"none\" stroke=\"#b05a51\" stroke-width=\"1.6\"/><text x=\"50\" y=\"150\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\">流量</text><line x1=\"56\" y1=\"174\" x2=\"600\" y2=\"174\" stroke=\"#79828a\"/><text x=\"56\" y=\"188\" font-size=\"8\" fill=\"#79828a\">0 min</text><text x=\"300.8\" y=\"188\" font-size=\"8\" fill=\"#b26a39\" text-anchor=\"middle\">↓ 前兆开始</text><text x=\"436.79999999999995\" y=\"188\" font-size=\"8\" fill=\"#b05a51\" text-anchor=\"middle\">↓ 卡钻</text><text x=\"600\" y=\"188\" font-size=\"8\" fill=\"#79828a\" text-anchor=\"end\">+60 min</text></svg></div><div class=\"figcap\"><b>图 2</b><span>图 1 · 多变量时序中的卡钻前兆。正常段噪声平稳；前兆期（左 22 min）各通道同时出现微弱异常；随后卡钻发生</span></div><p>· 卡钻：扭矩波动变大 + 钻压传递效率下降 + 返出流量略降</p><p>· 井漏：立管压力微升 + 返出流量持续低于泵入量 + 钻时加快</p><p>· 气侵：返出流量增加 + 密度下降 + 立管压力波动</p><p>传统固定阈值的问题：设高了漏报，设低了误报（接单根、划眼都会触发）。现场反馈\"误报多到麻木\"。</p>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>把预警建模为<b>多变量时序上的异常检测</b>：</p><p>① 用无监督方法（自编码器、隔离森林、MSPC）建立正常基线，计算<b>偏离度分数</b>；</p><p>② 引入<b>滑动窗口变化率特征</b>（最近 5 min vs 前 30 min），捕捉\"缓慢恶化\"；</p><p>③ 用规则引擎过滤已知工况切换（接单根等），避免误报；</p><p>④ 输出的不只是\"报警\"，还要给<b>可疑通道列表</b>和<b>趋势图</b>，让司钻知道\"什么参数不对劲\"。</p><div class=\"figure\"><svg viewBox=\"0 0 620 130\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"4\" y=\"22\" width=\"102\" height=\"80\" rx=\"8\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-opacity=\".35\"/><rect x=\"4\" y=\"22\" width=\"3\" height=\"80\" rx=\"1.5\" fill=\"#2f7d6b\"/><text x=\"18\" y=\"44\" font-size=\"11\" font-weight=\"600\" fill=\"#242b2e\">多通道时序</text><text x=\"18\" y=\"64\" font-size=\"9\" fill=\"#5d666d\">扭矩/立压/钻压/流量</text><text x=\"96\" y=\"96\" font-size=\"8\" font-family=\"monospace\" fill=\"#2f7d6b\">01</text><path d=\"M108 62h8m-3-3 3 3-3 3\" stroke=\"#c9c2b0\" stroke-width=\"1.3\" fill=\"none\"/><rect x=\"116\" y=\"22\" width=\"102\" height=\"80\" rx=\"8\" fill=\"#efe9f4\" stroke=\"#7e5a8d\" stroke-opacity=\".35\"/><rect x=\"116\" y=\"22\" width=\"3\" height=\"80\" rx=\"1.5\" fill=\"#7e5a8d\"/><text x=\"130\" y=\"44\" font-size=\"11\" font-weight=\"600\" fill=\"#242b2e\">基线偏离度</text><text x=\"130\" y=\"64\" font-size=\"9\" fill=\"#5d666d\">自编码器</text><text x=\"130\" y=\"78\" font-size=\"9\" fill=\"#5d666d\">+ 隔离森林</text><text x=\"208\" y=\"96\" font-size=\"8\" font-family=\"monospace\" fill=\"#7e5a8d\">02</text><path d=\"M220 62h8m-3-3 3 3-3 3\" stroke=\"#c9c2b0\" stroke-width=\"1.3\" fill=\"none\"/><rect x=\"228\" y=\"22\" width=\"102\" height=\"80\" rx=\"8\" fill=\"#f8ecdf\" stroke=\"#b26a39\" stroke-opacity=\".35\"/><rect x=\"228\" y=\"22\" width=\"3\" height=\"80\" rx=\"1.5\" fill=\"#b26a39\"/><text x=\"242\" y=\"44\" font-size=\"11\" font-weight=\"600\" fill=\"#242b2e\">窗口特征</text><text x=\"242\" y=\"64\" font-size=\"9\" fill=\"#5d666d\">5 min vs 30 min</text><text x=\"242\" y=\"78\" font-size=\"9\" fill=\"#5d666d\">变化率</text><text x=\"320\" y=\"96\" font-size=\"8\" font-family=\"monospace\" fill=\"#b26a39\">03</text><path d=\"M332 62h8m-3-3 3 3-3 3\" stroke=\"#c9c2b0\" stroke-width=\"1.3\" fill=\"none\"/><rect x=\"340\" y=\"22\" width=\"102\" height=\"80\" rx=\"8\" fill=\"#f1f1dd\" stroke=\"#767a2e\" stroke-opacity=\".35\"/><rect x=\"340\" y=\"22\" width=\"3\" height=\"80\" rx=\"1.5\" fill=\"#767a2e\"/><text x=\"354\" y=\"44\" font-size=\"11\" font-weight=\"600\" fill=\"#242b2e\">规则过滤</text><text x=\"354\" y=\"64\" font-size=\"9\" fill=\"#5d666d\">接单根降敏</text><text x=\"354\" y=\"78\" font-size=\"9\" fill=\"#5d666d\">持续 ≥ 3 min</text><text x=\"432\" y=\"96\" font-size=\"8\" font-family=\"monospace\" fill=\"#767a2e\">04</text><path d=\"M444 62h8m-3-3 3 3-3 3\" stroke=\"#c9c2b0\" stroke-width=\"1.3\" fill=\"none\"/><rect x=\"452\" y=\"22\" width=\"102\" height=\"80\" rx=\"8\" fill=\"#fdfcf9\" stroke=\"#31393d\" stroke-opacity=\".35\"/><rect x=\"452\" y=\"22\" width=\"3\" height=\"80\" rx=\"1.5\" fill=\"#31393d\"/><text x=\"466\" y=\"44\" font-size=\"11\" font-weight=\"600\" fill=\"#242b2e\">分级预警</text><text x=\"466\" y=\"64\" font-size=\"9\" fill=\"#5d666d\">信息 + 可疑通道</text><text x=\"466\" y=\"78\" font-size=\"9\" fill=\"#5d666d\">交给司钻</text><text x=\"544\" y=\"96\" font-size=\"8\" font-family=\"monospace\" fill=\"#31393d\">05</text><text x=\"6\" y=\"120\" font-size=\"9\" fill=\"#2f7d6b\">无监督算法</text><text x=\"230\" y=\"120\" font-size=\"9\" fill=\"#b26a39\">特征工程</text><text x=\"342\" y=\"120\" font-size=\"9\" fill=\"#767a2e\">规则引擎</text><text x=\"454\" y=\"120\" font-size=\"9\" fill=\"#31393d\">人机协同</text></svg></div><div class=\"figcap\"><b>图 2</b><span>图 2 · AI 预警架构：无监督算法 + 特征工程 + 规则引擎 + 人机协同，四重过滤后才触发预警</span></div><p>关键：<b>不要用监督学习硬分类</b>——事故样本太少，无监督基线 + 规则引擎更可行。</p>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">预警数据清单：</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 4 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 4</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">多通道钻井参数</span><span class=\"cl-s\">扭矩、立压、泵压、钻压、转速、流量等</span></span><span class=\"cl-n\">10+ 通道，1-10 s 采样</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">工况标签</span><span class=\"cl-s\">钻进、接单根、起下钻</span></span><span class=\"cl-n\">可由规则自动划分</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">事故台账</span><span class=\"cl-s\">时间、类型、处理过程</span></span><span class=\"cl-n\">用于验证</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">历史参数曲线</span><span class=\"cl-s\">至少 3 口井的完整回放</span></span><span class=\"cl-n\">无标注也可</span></div></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;margin-bottom:2px\"><span class=\"dtag\" data-d=\"高\">难度 高</span><span class=\"small muted\">闭环最难的环节：异常少 + 分布漂移 + 误报代价高。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"on hi\"></i></div><p>核心难点：</p><p>① 异常样本极少（一口井可能整井没事故），监督学习不可行；</p><p>② 不同钻机、地层的\"正常\"分布漂移显著；</p><p>③ 预警必须可解释——\"扭矩波动 + 钻压传递下降\"比一个数字有用。</p><p>改进路线：先从<b>单井无监督基线</b>起步，再加<b>工况感知规则</b>，最后积累样本做弱监督微调。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/ts\">隔离森林<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/ts\">自编码器重构误差<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/ts\">多变量统计过程控制<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/ts\">滑动窗口特征<span class=\"ar\">↗</span></a></div>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：3 口井的钻进过程异常监控",
+      "lead": [
+        "某区块 3 口水平井钻进，其中 1 口发生卡钻事故（直接损失 30 万）。事后回放发现卡钻事故前 22 分钟扭矩开始小幅波动、钻压传递效率缓慢下降——但司钻当时没有及时识别。",
+        "目标：把\"事后回放\"变成\"实时预警\"，提前 15 分钟以上给出先兆提示。"
+      ],
+      "stats": [
+        [
+          "监控通道",
+          "12"
+        ],
+        [
+          "采样频率",
+          "5 s"
+        ],
+        [
+          "卡钻预警提前",
+          "22 min"
+        ],
+        [
+          "误报率",
+          "<5%"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "历史数据回放",
+          "role": "数据",
+          "do": "把 3 口井的高频参数解编、对齐时间戳，标注已知工况和事故时间。",
+          "effect": "带时间戳的完整时序。",
+          "trap": "不同通道采样时间有偏差，需插值对齐。"
+        },
+        {
+          "name": "基线建模",
+          "role": "算法",
+          "do": "用正常钻进段训练隔离森林 + 自编码器，输出多变量异常分数。",
+          "effect": "\"偏离正常\"的连续分数。",
+          "trap": "只在正常段训练，事故段本身会被判异常。"
+        },
+        {
+          "name": "窗口特征提取",
+          "role": "特征",
+          "do": "计算滑动窗口（5 min vs 30 min）的变化率特征，捕捉\"缓慢恶化\"。",
+          "effect": "对趋势型前兆敏感。",
+          "trap": "窗口长度是关键超参。"
+        },
+        {
+          "name": "规则引擎过滤",
+          "role": "后处理",
+          "do": "接单根时自动降低敏感度；只在\"偏离度高 + 持续 ≥ 3 min + ≥ 2 通道异常\"时报警。",
+          "effect": "大幅降低误报。",
+          "trap": "规则要随钻机调整。"
+        },
+        {
+          "name": "实时部署与回流",
+          "role": "部署",
+          "do": "现场服务器实时运行，每 30 s 更新基线，工程师可\"标记这次是正常波动\"——标记回流后自适应。",
+          "effect": "模型越用越准。",
+          "trap": "没有回流机制，三个月就过时。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"预警有效\"",
+        "html": "<p>核心指标：<b>提前时间</b>（预警到事故 ≥ 15 min）、<b>告警准确率</b>（≥ 80%）。<b>误报率 < 5%</b> 是硬约束——超过阈值工程师就麻木了。</p>"
+      },
+      "fails": [
+        {
+          "name": "工况切换触发误报",
+          "why": "接单根、划眼偏离正常基线。解决：工况感知的自动敏感度调整。"
+        },
+        {
+          "name": "缓慢漂移漏检",
+          "why": "扭矩每天慢涨 5%，单看绝对值不异常。解决：窗口变化率特征。"
+        },
+        {
+          "name": "新井分布漂移",
+          "why": "不同井地层不同。解决：每口井先跑 2-3 小时建立专属基线。"
+        }
+      ]
+    }
+  }
+}

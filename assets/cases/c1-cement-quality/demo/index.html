@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>示范：固井质量智能评价 CBL/VDL</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px 20px; color: #242b2e; background: #fdfcf9; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .lead { color: #5d666d; font-size: 13px; margin: 0 0 20px; line-height: 1.6; }
+  .ctl { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+  .ctl label { min-width: 100px; color: #5d666d; }
+  .ctl input[type=range] { flex: 1; max-width: 260px; }
+  .ctl .val { min-width: 44px; text-align: right; font-family: monospace; color: #2f7d6b; font-weight: 600; }
+  .switches { display: flex; gap: 12px; margin-bottom: 16px; font-size: 13px; }
+  .switches label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .layout { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .tracks { display: flex; gap: 0; position: relative; }
+  .track-wrap { position: relative; }
+  .depth-axis { font-family: monospace; font-size: 10px; color: #9ba3a9; width: 52px; flex-shrink: 0; }
+  .depth-axis .tick { position: absolute; right: 8px; }
+  svg.track { display: block; }
+  .track-header { font-size: 11px; font-family: monospace; color: #79828a; text-align: center; padding: 4px 0; border-bottom: 1px solid #e9e4d8; margin-bottom: 2px; }
+  .side .panel { background: #fdfcf9; border: 1px solid #e9e4d8; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+  .side .panel h3 { margin: 0 0 8px; font-size: 13px; color: #79828a; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px dashed #eeeae0; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .k { color: #5d666d; }
+  .stat-row .v { font-family: monospace; font-weight: 600; }
+  .grade-legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; margin-top: 8px; }
+  .grade-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .grade-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+  .conf-bar { background: #eeeae0; border-radius: 3px; overflow: hidden; height: 6px; margin-top: 4px; }
+  .conf-bar > div { height: 100%; transition: width 0.15s; }
+  .verdict { padding: 10px 12px; border-radius: 6px; font-size: 13px; line-height: 1.6; }
+  .verdict.ok { background: #e6f1ec; color: #2f7d6b; }
+  .verdict.warn { background: #f8ecdf; color: #b26a39; }
+  .verdict.bad { background: #f9e9e5; color: #b05a51; }
+</style>
+</head>
+<body>
+
+<h1>CBL/VDL 固井质量智能评价示范</h1>
+<p class="lead">合成一口 500 m 井段的测井数据，包含 <b>好胶结</b>、<b>中等胶结</b>、<b>差胶结</b>、<b>缺水泥</b> 四段，混入不同水平的噪声和快速地层效应。拖动滑杆改变条件，看 CBL 曲线、VDL 变密度图如何变化，以及分类器实时输出的胶结等级。</p>
+
+<div class="ctl">
+  <label>整体胶结质量</label>
+  <input type="range" id="q" min="0" max="100" step="1" value="60">
+  <span class="val" id="q-v">60</span>
+</div>
+<div class="ctl">
+  <label>噪声水平</label>
+  <input type="range" id="noise" min="0" max="100" step="1" value="20">
+  <span class="val" id="noise-v">20</span>
+</div>
+<div class="switches">
+  <label><input type="checkbox" id="fast" checked>快速地层（灰岩段）</label>
+  <label><input type="checkbox" id="micro">微环隙</label>
+  <label><input type="checkbox" id="show-gt" checked>显示人工基准</label>
+</div>
+
+<div class="layout">
+  <div class="tracks" id="tracks"></div>
+  <div class="side">
+    <div class="panel">
+      <h3>分类结果统计</h3>
+      <div id="stats"></div>
+      <div class="grade-legend">
+        <span><i style="background:#2f7d6b"></i>好</span>
+        <span><i style="background:#b26a39"></i>中</span>
+        <span><i style="background:#b05a51"></i>差</span>
+        <span><i style="background:#6b4b8a"></i>缺水泥</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>当前段置信度</h3>
+      <div id="cur-conf">悬停查看某一段</div>
+    </div>
+    <div class="panel">
+      <h3>判读提示</h3>
+      <div class="verdict ok" id="verdict">好胶结：套管波被水泥吸收，幅度低；VDL 上看到清晰地层波条纹。</div>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>

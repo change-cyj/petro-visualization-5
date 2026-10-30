@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>示范：井下复杂事故前兆预警</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px; color: #242b2e; background: #fdfcf9; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .lead { color: #5d666d; font-size: 13px; margin: 0 0 16px; line-height: 1.6; }
+  .ctl { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; font-size: 13px; flex-wrap: wrap; }
+  .ctl label { color: #5d666d; margin-right: 4px; }
+  .ctl input[type=range] { width: 130px; }
+  .layout { display: grid; grid-template-columns: 1fr 280px; gap: 18px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: #fdfcf9; border: 1px solid #e9e4d8; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+  .panel h3 { margin: 0 0 8px; font-size: 12px; color: #79828a; text-transform: uppercase; letter-spacing: 1px; }
+  .mrow { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px dashed #eeeae0; }
+  .mrow:last-child { border-bottom: none; }
+  .mrow .k { color: #5d666d; }
+  .mrow .v { font-family: monospace; font-weight: 600; }
+  .tracks { display: flex; flex-direction: column; gap: 2px; }
+  .track-row { display: flex; align-items: center; }
+  .track-label { width: 60px; font-size: 10px; color: #79828a; font-family: monospace; text-align: right; padding-right: 8px; }
+  button { background: #e6f1ec; color: #2f7d6b; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  button:hover { background: #d4e6dd; }
+  .alert { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 6px; line-height: 1.6; }
+  .alert.ok { background: #e6f1ec; color: #2f7d6b; }
+  .alert.warn { background: #f8ecdf; color: #b26a39; }
+  .alert.bad { background: #f9e9e5; color: #b05a51; }
+</style>
+</head>
+<body>
+<h1>井下复杂事故前兆预警示范</h1>
+<p class="lead">实时生成 6 通道钻井参数时序（扭矩、立管压力、泵压、钻压、返出流量、钻时），偶尔注入卡钻前兆模式（扭矩波动放大 + 钻压传递效率下降）。用多变量"偏离度分数"检测异常，分数超过阈值时自动预警。</p>
+
+<div class="ctl">
+  <label>噪声 <input type="range" id="noise" min="0" max="100" step="1" value="30"></label>
+  <label>阈值 <input type="range" id="th" min="0.5" max="3" step="0.05" value="1.5"></label>
+  <label>事故注入 <input type="range" id="intensity" min="0" max="100" step="1" value="60"></label>
+  <button id="btn-inject">注入卡钻前兆</button>
+  <button id="btn-reset">重置</button>
+</div>
+
+<div class="layout">
+  <div>
+    <div class="tracks" id="tracks"></div>
+  </div>
+  <div class="side">
+    <div class="panel">
+      <h3>异常分数（实时）</h3>
+      <svg id="score" viewBox="0 0 260 180" style="width:100%;max-width:260px"></svg>
+    </div>
+    <div class="panel">
+      <h3>当前状态</h3>
+      <div id="stats"></div>
+      <div id="alert" class="alert ok">✓ 正常：所有通道参数在基线范围内。</div>
+    </div>
+    <div class="panel">
+      <h3>可疑通道</h3>
+      <div id="suspects" style="font-size:12px;color:#5d666d;line-height:1.5">—</div>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>

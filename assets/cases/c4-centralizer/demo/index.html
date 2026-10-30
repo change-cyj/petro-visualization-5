@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>示范：套管居中度智能评估</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px; color: #242b2e; background: #fdfcf9; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .lead { color: #5d666d; font-size: 13px; margin: 0 0 18px; line-height: 1.6; }
+  .ctl { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; font-size: 13px; flex-wrap: wrap; }
+  .ctl label { color: #5d666d; }
+  .layout { display: grid; grid-template-columns: 1fr 260px; gap: 20px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: #fdfcf9; border: 1px solid #e9e4d8; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+  .panel h3 { margin: 0 0 8px; font-size: 12px; color: #79828a; text-transform: uppercase; letter-spacing: 1px; }
+  .mrow { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px dashed #eeeae0; }
+  .mrow:last-child { border-bottom: none; }
+  .mrow .k { color: #5d666d; }
+  .mrow .v { font-family: monospace; font-weight: 600; }
+  .tip { position: absolute; background: #242b2e; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 10; display: none; }
+  button { background: #e6f1ec; color: #2f7d6b; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  button:hover { background: #d4e6dd; }
+  .legend { font-size: 11px; color: #79828a; margin-top: 6px; }
+  .legend span { display: inline-block; margin-right: 12px; }
+  .legend i { display: inline-block; width: 14px; height: 8px; vertical-align: middle; margin-right: 3px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<h1>套管居中度智能评估示范</h1>
+<p class="lead">合成一口 2500 m 定向井的井径和井斜曲线。<b>点击井深位置</b>安放/移除扶正器，居中度曲线实时更新——绿色段 = 达标（≥67%），红色段 = 不达标。右侧统计扶正器用量、全井段达标率和最差点。</p>
+
+<div class="ctl">
+  <label>扶正器外径：</label>
+  <select id="csize">
+    <option value="130">130 mm（常规）</option>
+    <option value="140" selected>140 mm（加大）</option>
+    <option value="150">150 mm（超大）</option>
+  </select>
+  <label>套管外径：</label>
+  <select id="csleeve">
+    <option value="114">114 mm（4.5"）</option>
+    <option value="139" selected>139 mm（5.5"）</option>
+    <option value="178">178 mm（7"）</option>
+  </select>
+  <span style="margin-left:auto;color:#9ba3a9;font-size:11px">点击曲线区域安放扶正器，再次点击移除</span>
+</div>
+
+<div class="layout">
+  <div>
+    <svg id="well" viewBox="0 0 700 460" style="width:100%;max-width:700px;cursor:pointer" role="img"></svg>
+    <div class="legend">
+      <span><i style="background:#41699b"></i>井径</span>
+      <span><i style="background:#b26a39"></i>井斜角</span>
+      <span><i style="background:#2f7d6b"></i>居中度（达标段）</span>
+      <span><i style="background:#b05a51"></i>居中度（不达标段）</span>
+      <span><i style="background:#b26a39;border-radius:50%;width:10px;height:10px"></i>扶正器</span>
+    </div>
+    <div style="margin-top:8px">
+      <button id="btn-opt">一键优化</button>
+      <button id="btn-clear" style="background:#f9e9e5;color:#b05a51">清除全部</button>
+      <button id="btn-even">均匀安放（传统）</button>
+    </div>
+  </div>
+  <div class="side">
+    <div class="panel">
+      <h3>当前方案统计</h3>
+      <div class="mrow"><span class="k">扶正器数量</span><span class="v" id="cnt">0</span></div>
+      <div class="mrow"><span class="k">全井段达标率</span><span class="v" id="pct">—</span></div>
+      <div class="mrow"><span class="k">平均居中度</span><span class="v" id="avg">—</span></div>
+      <div class="mrow"><span class="k">最差点</span><span class="v" id="worst">—</span></div>
+    </div>
+    <div class="panel">
+      <h3>API 要求</h3>
+      <div class="mrow"><span class="k">居中度标准</span><span class="v">≥67%</span></div>
+      <div class="mrow"><span class="k">达标段要求</span><span class="v">≥90%</span></div>
+    </div>
+    <div class="panel" id="tip" style="font-size:12px;color:#5d666d;line-height:1.5"></div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>

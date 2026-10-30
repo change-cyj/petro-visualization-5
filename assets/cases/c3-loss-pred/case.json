@@ -1,0 +1,145 @@
+{
+  "id": "c3-loss-pred",
+  "sceneId": "c3",
+  "title": "固井漏失风险预测：密度窗口与当量密度的实时监控",
+  "status": "ready",
+  "version": "1.0.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "二分类 + 分级",
+          "desc": "漏失概率输出",
+          "html": "<span style=\"color:var(--c-opt)\">OPT</span>"
+        },
+        {
+          "label": "数据门槛",
+          "value": "200+ 井次",
+          "desc": "井况 + 浆柱 + 漏失记录"
+        },
+        {
+          "label": "收益",
+          "value": "误报降 40%",
+          "desc": "风险分级 + 可解释"
+        },
+        {
+          "label": "难度",
+          "value": "中",
+          "desc": "漏失事件占比低",
+          "html": "<span class=\"dtag\" data-d=\"中\">难度 中</span>"
+        }
+      ],
+      "lede": "固井漏失是最常见的固井事故，一旦泵压超过地层破裂压力，环空液体进入地层，水泥返高不够，严重时整井需要重注。传统风险判断靠工程师手算当量密度并与破裂压力对比，但破裂压力本身有解释误差，循环附加压力也依赖经验估算。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>固井漏失的本质是<b>当量密度 > 破裂压力</b>。工程师在设计阶段会计算各深度段的当量密度曲线，与破裂压力剖面对比，看窗口是否被顶破。</p><div class=\"figure\"><svg viewBox=\"0 0 620 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"48\" y=\"20\" width=\"552\" height=\"132\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><path d=\"M48 59.6 Q213.6 72.80000000000001 434.4 62.24 T600 53\" fill=\"none\" stroke=\"#b05a51\" stroke-width=\"2.2\"/><path d=\"M48 51.68 Q213.6 64.88 434.4 54.32 T600 45.08 L600 60.92 T434.4 70.16 Q213.6 80.72 48 67.52 Z\" fill=\"#b05a51\" fill-opacity=\"0.1\" stroke=\"#b05a51\" stroke-opacity=\"0.35\" stroke-dasharray=\"3 2\"/><path d=\"M48 92.60000000000001 Q158.4 83.36 268.8 79.4 Q351.6 70.16 406.8 63.56 Q478.56 56.96 600 72.80000000000001\" fill=\"none\" stroke=\"#31393d\" stroke-width=\"2\"/><rect x=\"390.24\" y=\"20\" width=\"55.2\" height=\"132\" fill=\"#b05a51\" fill-opacity=\"0.15\"/><text x=\"417.84000000000003\" y=\"170\" font-size=\"9\" fill=\"#b05a51\" text-anchor=\"middle\">漏失风险段</text><text x=\"48\" y=\"14\" font-size=\"9\" fill=\"#79828a\" font-family=\"monospace\">0 m</text><text x=\"600\" y=\"14\" font-size=\"9\" fill=\"#79828a\" font-family=\"monospace\" text-anchor=\"end\">3500 m</text><text x=\"54\" y=\"41.120000000000005\" font-size=\"10\" fill=\"#b05a51\" font-weight=\"600\" paint-order=\"stroke\" stroke=\"#fdfcf9\" stroke-width=\"3\">破裂压力（±0.04 误差带）</text><text x=\"54\" y=\"105.8\" font-size=\"10\" fill=\"#31393d\" font-weight=\"600\" paint-order=\"stroke\" stroke=\"#fdfcf9\" stroke-width=\"3\">当量密度（实时监控）</text><text x=\"48\" y=\"132.2\" font-size=\"9\" fill=\"#2f7d6b\">安全裕度 = 破裂压力 − 当量密度</text></svg></div><div class=\"figcap\"><b>图 2</b><span>图 1 · 沿井深的当量密度曲线 vs 破裂压力剖面。红色虚线带是破裂压力的解释误差区间；当量密度一旦进入风险区（右段），漏失概率陡增</span></div><p>问题：破裂压力本身是解释值，误差常在 0.03—0.05 g/cm³；循环附加压力的估算依赖经验公式；漏失事件占比通常只有 10—15%，训练样本严重不均衡。传统用固定阈值预警，误报率偏高——工程师对误报已经麻木，真漏失来了反而不重视。</p>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>① 训练<b>GBDT / XGBoost 分类器</b>，用 SMOTE 处理类不均衡，输出<b>漏失概率</b>而非硬分类；</p><p>② 用<b>SHAP / LIME 特征归因</b>让工程师知道\"为什么这口井风险高——因为破裂压力窗口窄 + 排量大\"；</p><p>③ 施工中每 30 秒更新当量密度和漏失概率，超过阈值分级推送预警。</p><div class=\"figure\"><svg viewBox=\"0 0 620 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"40\" y=\"0\" width=\"580\" height=\"180\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><line x1=\"350\" y1=\"16\" x2=\"350\" y2=\"152\" stroke=\"#c9c2b0\" stroke-width=\"1\"/><rect x=\"125\" y=\"16\" width=\"225\" height=\"16\" fill=\"#b05a51\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"27\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">密度窗口裕度</text><text x=\"121\" y=\"27\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">-1.8</text><rect x=\"200\" y=\"36\" width=\"150\" height=\"16\" fill=\"#b26a39\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"47\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">破裂压力误差</text><text x=\"196\" y=\"47\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">-1.2</text><rect x=\"350\" y=\"56\" width=\"100\" height=\"16\" fill=\"#41699b\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"67\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">排量</text><text x=\"454\" y=\"67\" text-anchor=\"start\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">+0.8</text><rect x=\"275\" y=\"76\" width=\"75\" height=\"16\" fill=\"#7e5a8d\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"87\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">井斜角</text><text x=\"271\" y=\"87\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">-0.6</text><rect x=\"350\" y=\"96\" width=\"62.5\" height=\"16\" fill=\"#2f7d6b\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"107\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">孔隙压力</text><text x=\"416.5\" y=\"107\" text-anchor=\"start\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">+0.5</text><rect x=\"350\" y=\"116\" width=\"37.5\" height=\"16\" fill=\"#767a2e\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"127\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">水泥浆密度</text><text x=\"391.5\" y=\"127\" text-anchor=\"start\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">+0.3</text><rect x=\"325\" y=\"136\" width=\"25\" height=\"16\" fill=\"#79828a\" fill-opacity=\"0.75\" rx=\"3\"/><text x=\"94\" y=\"147\" text-anchor=\"end\" font-size=\"10\" fill=\"#242b2e\">井径扩大率</text><text x=\"321\" y=\"147\" text-anchor=\"end\" font-size=\"9\" fill=\"#5d666d\" font-family=\"monospace\">-0.2</text><text x=\"90\" y=\"174\" font-size=\"9\" fill=\"#b05a51\" text-anchor=\"end\">↓ 降低漏失概率</text><text x=\"600\" y=\"174\" font-size=\"9\" fill=\"#41699b\" text-anchor=\"end\">↑ 提高漏失概率</text></svg></div><div class=\"figcap\"><b>图 2</b><span>图 2 · SHAP 特征归因条形图：哪些因素主导漏失风险。宽度代表对概率的贡献方向，红色负向（降低风险），蓝色正向（提高风险）</span></div><p>关键洞察：<b>不要硬分类</b>——输出概率 + 置信区间，让工程师根据业务代价自己判断阈值。</p>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">建模数据清单：</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 5 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 5</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">孔隙压力剖面</span><span class=\"cl-s\">沿井深逐点</span></span><span class=\"cl-n\">解释值（带误差）</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">破裂压力剖面</span><span class=\"cl-s\">沿井深逐点</span></span><span class=\"cl-n\">解释值（带误差）</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">井况参数</span><span class=\"cl-s\">井径、井斜、套管程序</span></span><span class=\"cl-n\">静态</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">浆柱设计</span><span class=\"cl-s\">密度、流变性、排量</span></span><span class=\"cl-n\">设计值</span></div><div class=\"cl-item\" data-cl=\"4\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">漏失标签</span><span class=\"cl-s\">是否漏失、漏失段、漏失原因</span></span><span class=\"cl-n\">结果记录</span></div></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;margin-bottom:2px\"><span class=\"dtag\" data-d=\"中\">难度 中</span><span class=\"small muted\">漏失事件少且标签噪声大，可解释性是关键。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"\"></i></div><p>核心难点：漏失事件少（10—15%）+ 破裂压力解释误差传导。解决方向：</p><p>① 用 SMOTE 或焦点损失处理类不均衡；</p><p>② 输出概率区间而非点估计；</p><p>③ 强制加入特征归因，\"黑盒\"预警没人信。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/opt\">GBDT/XGBoost<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">SMOTE 过采样<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">SHAP/LIME 归因<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">概率校准<span class=\"ar\">↗</span></a></div>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：180 井次固井漏失风险建模",
+      "lead": [
+        "某油田 180 井次的固井数据，其中 23 次发生漏失（12.8%）。建模目标：施工前预测漏失概率，施工中实时监控当量密度。",
+        "用概率输出替代硬分类，让工程师在风险和效率之间做权衡。"
+      ],
+      "stats": [
+        [
+          "总井次",
+          "180"
+        ],
+        [
+          "漏失井次",
+          "23"
+        ],
+        [
+          "模型 AUC",
+          "0.89"
+        ],
+        [
+          "漏失召回率",
+          "87%"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "数据清洗与特征工程",
+          "role": "数据",
+          "do": "把原始井况参数转换为密度窗口裕度、当量密度峰值等特征，统一单位。",
+          "effect": "数值化特征矩阵。",
+          "trap": "破裂压力解释误差直接影响特征质量。"
+        },
+        {
+          "name": "类不均衡处理",
+          "role": "算法",
+          "do": "对训练集做 SMOTE 过采样 + 分层 K 折交叉验证。",
+          "effect": "模型不再倾向于\"全判非漏失\"。",
+          "trap": "过采样后要单独评估真实验证集。"
+        },
+        {
+          "name": "分类器训练",
+          "role": "算法",
+          "do": "训练 GBDT 分类器，输出漏失概率而非硬标签。",
+          "effect": "可校准的概率输出。",
+          "trap": "阈值不是 0.5，要根据业务代价调。"
+        },
+        {
+          "name": "特征归因分析",
+          "role": "可解释",
+          "do": "用 SHAP 值分析每个特征的贡献，生成\"风险因子排名\"。",
+          "effect": "工程师知道风险来自哪里。",
+          "trap": "归因要可视化呈现。"
+        },
+        {
+          "name": "实时监控系统",
+          "role": "部署",
+          "do": "施工中每 30 秒更新当量密度和漏失概率，分级推送预警。",
+          "effect": "给司钻争取处置时间。",
+          "trap": "预警太多会被忽略，要分级。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"预测对了\"",
+        "html": "<p>因为漏失只占 13%，<b>准确率 90% 毫无意义</b>——全判非漏失也有 87%。正确的指标是：<b>AUC</b>（概率排序能力）、<b>召回率</b>（漏失井被找回的比例）、<b>告警准确率</b>（工程师收到预警后真漏了的比例）。</p>"
+      },
+      "fails": [
+        {
+          "name": "类不均衡导致召回率低",
+          "why": "模型倾向于全判多数类。解决：SMOTE + 代价敏感学习。"
+        },
+        {
+          "name": "破裂压力解释误差传导",
+          "why": "输入本身有误差。解决：用概率区间代替点估计。"
+        },
+        {
+          "name": "新井分布漂移",
+          "why": "不同区块地层不同。解决：定期增量训练 + 区块专属模型。"
+        }
+      ]
+    }
+  }
+}

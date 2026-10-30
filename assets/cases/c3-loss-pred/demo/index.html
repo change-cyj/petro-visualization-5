@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>示范：固井漏失风险预测</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px; color: #242b2e; background: #fdfcf9; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .lead { color: #5d666d; font-size: 13px; margin: 0 0 20px; line-height: 1.6; }
+  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: #fdfcf9; border: 1px solid #e9e4d8; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+  .panel h3 { margin: 0 0 12px; font-size: 12px; color: #79828a; text-transform: uppercase; letter-spacing: 1px; }
+  .ctl { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; font-size: 13px; }
+  .ctl .row { display: flex; align-items: center; gap: 8px; }
+  .ctl label { color: #5d666d; min-width: 110px; }
+  .ctl input[type=range] { flex: 1; }
+  .ctl .val { min-width: 52px; text-align: right; font-family: monospace; color: #2f7d6b; font-weight: 600; font-size: 12px; }
+  .gauge-wrap { text-align: center; margin: 10px 0; }
+  .gauge-label { font-size: 13px; color: #5d666d; margin-bottom: 6px; }
+  .gauge-val { font-size: 36px; font-weight: 700; font-family: monospace; line-height: 1; }
+  .gauge-sub { font-size: 12px; color: #9ba3a9; margin-top: 4px; }
+  .risk-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  .risk-low { background: #e6f1ec; color: #2f7d6b; }
+  .risk-mid { background: #f8ecdf; color: #b26a39; }
+  .risk-high { background: #f9e9e5; color: #b05a51; }
+</style>
+</head>
+<body>
+<h1>固井漏失风险预测示范</h1>
+<p class="lead">基于一个简化的 GBDT 分类器，实时计算当前井况的漏失概率，并展示 SHAP 特征归因——让工程师知道<b>为什么</b>这口井风险高。拖动滑杆改变参数，看概率和归因怎么变。</p>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h3>井况参数</h3>
+      <div class="ctl">
+        <div class="row"><label>孔隙压力</label><input type="range" id="pp" min="0.85" max="1.25" step="0.01" value="1.02"><span class="val" id="pp-v">1.02</span></div>
+        <div class="row"><label>破裂压力</label><input type="range" id="fp" min="1.00" max="1.40" step="0.01" value="1.12"><span class="val" id="fp-v">1.12</span></div>
+      </div>
+      <h3 style="margin-top:16px">设计参数</h3>
+      <div class="ctl">
+        <div class="row"><label>水泥浆密度</label><input type="range" id="cd" min="0.95" max="1.45" step="0.01" value="1.08"><span class="val" id="cd-v">1.08</span></div>
+        <div class="row"><label>排量</label><input type="range" id="rate" min="8" max="50" step="1" value="25"><span class="val" id="rate-v">25</span></div>
+        <div class="row"><label>井斜角</label><input type="range" id="angle" min="0" max="80" step="1" value="15"><span class="val" id="angle-v">15</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h3>漏失概率</h3>
+      <div class="gauge-wrap">
+        <div class="gauge-label">预测漏失概率</div>
+        <div class="gauge-val" id="pval" style="color:#2f7d6b">—%</div>
+        <div id="badge"></div>
+        <div class="gauge-sub">概率 > 70%：高风险；30-70%：中风险；< 30%：低风险</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>SHAP 特征归因（为什么是这个结果？）</h3>
+      <svg id="shap" viewBox="0 0 560 200" style="width:100%;max-width:560px"></svg>
+      <div id="shap-text" style="font-size:12px;color:#5d666d;margin-top:8px"></div>
+    </div>
+
+    <div class="panel">
+      <h3>建议操作</h3>
+      <div id="advice" style="font-size:13px;line-height:1.6"></div>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>
